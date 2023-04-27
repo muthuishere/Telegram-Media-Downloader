@@ -148,60 +148,86 @@
   <svg xmlns="http://www.w3.org/2000/svg" style="height:24px;width:24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
     <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
   </svg>`;
+  
+  
+function buildButtons(ele){
 
-  setInterval(() => {
-    const ele = document.querySelector(
-      ".media-viewer-movers .media-viewer-aspecter"
-    );
     if (!ele) return;
 
-    if (ele.querySelector(".ckin__player")) {
-      // remove download img button if there's any
-      document
-        .querySelectorAll("._tel_download_button_img_container")
-        .forEach((e) => e.remove());
 
-      // add download button to videos
-      const controls = ele.querySelector(".default__controls.ckin__controls");
-      const videoUrl = ele.querySelector("video").src;
 
-      if (controls && !controls.querySelector("._tel_download_button_video")) {
-        const brControls = controls.querySelector(
-          ".bottom-controls .right-controls"
-        );
-        const downloadButton = document.createElement("button");
-        downloadButton.className =
-          "btn-icon default__button _tel_download_button_video";
-        downloadButton.innerHTML = downloadIcon;
-        downloadButton.onclick = () => {
-          tel_download_video(videoUrl);
-        };
-        brControls.prepend(downloadButton);
-      }
-    } else if (!ele.querySelector("._tel_download_button_img")) {
-      // add download button to images
-      const imageUrl = ele.querySelector("img.thumbnail").src;
+     if (ele.querySelector(".VideoPlayer")) {
+  // remove download img button if there's any
 
-      const container = document.createElement("div");
-      container.className = "_tel_download_button_img_container";
-      container.style.position = "absolute";
-      container.style.width = "100%";
-      container.style.height = "100%";
-      container.style.display = "flex";
-      container.style.justifyContent = "center";
-      container.style.alignItems = "end";
-      const downloadButton = document.createElement("button");
-      downloadButton.className =
-        "btn-icon default__button _tel_download_button_img";
-      downloadButton.innerHTML = downloadIcon;
-      downloadButton.style.marginBottom = "16px";
-      downloadButton.style.backgroundColor = "black";
-      downloadButton.onclick = (e) => {
-        e.stopPropagation();
-        tel_download_image(imageUrl);
-      };
-      ele.appendChild(container);
-      container.appendChild(downloadButton);
-    }
-  }, 500);
+  document
+  .querySelectorAll("._tel_download_button_img_container")
+  .forEach((e) => e.remove());
+
+  // add download button to videos
+  const controls = ele.querySelector(".VideoPlayerControls");
+  const srcElement=ele.querySelector("video").querySelector("source")
+
+  if(!srcElement)
+  return
+  
+  const videoUrl = ele.querySelector("video").querySelector("source").src;
+
+  if (controls && !controls.querySelector("._tel_download_button_video")) {
+    const brControls = controls.querySelector(
+      ".buttons"
+    );
+    const downloadButton = document.createElement("button");
+    downloadButton.className =
+      "btn-icon default__button _tel_download_button_video";
+    downloadButton.innerHTML = downloadIcon;
+    downloadButton.onclick = () => {
+        
+      tel_download_video(videoUrl);
+    };
+    brControls.prepend(downloadButton);
+  }
+} else if (!ele.querySelector("._tel_download_button_img")) {
+  // add download button to images
+    //console.log(ele.querySelector("img.is-protected"))
+    if(ele.querySelector("img.is-protected") && ele.querySelector("img.is-protected").src){
+  const imageUrl = ele.querySelector("img.is-protected").src;
+
+  const container = document.createElement("div");
+  container.className = "_tel_download_button_img_container";
+  container.style.position = "absolute";
+  container.style.width = "100%";
+  container.style.height = "100%";
+  container.style.display = "flex";
+  container.style.justifyContent = "center";
+  container.style.alignItems = "end";
+  const downloadButton = document.createElement("button");
+  downloadButton.className =
+    "btn-icon default__button _tel_download_button_img";
+  downloadButton.innerHTML = downloadIcon;
+  downloadButton.style.marginBottom = "16px";
+  downloadButton.style.backgroundColor = "black";
+          downloadButton.style.zIndex = "4500";
+  downloadButton.onclick = (e) => {
+    e.stopPropagation();
+    tel_download_image(imageUrl);
+  };
+  ele.appendChild(container);
+  container.appendChild(downloadButton);
+}}
+
+}
+  
+  
+  function initializeAll(){
+    
+      const elems = document.querySelectorAll(
+    ".MediaViewerContent"
+  );
+    for(let i=0;i<elems.length;i++)
+    buildButtons(elems[i])
+    
+    setTimeout(()=>initializeAll(), 500);
+  }
+
+  initializeAll()
 })();
